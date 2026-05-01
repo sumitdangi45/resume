@@ -4,3 +4,8 @@
 # React Router
 /.react-router/
 /build/
+
+# ML Datasets (Ignore Large Datasets)
+ml/*.json
+ml/*.csv
+ml/__pycache__/
