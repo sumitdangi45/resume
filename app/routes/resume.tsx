@@ -105,7 +105,7 @@ const Resume = () => {
                                         Verify them against your GitHub profile to get an authenticity score.
                                     </p>
                                     <Link
-                                        to={`/github?skills=${encodeURIComponent(feedback.extracted_skills_present.join(', '))}`}
+                                        to={`/github?resumeId=${id}`}
                                         className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition-colors"
                                     >
                                         Analyze GitHub Profile →

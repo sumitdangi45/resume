@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 import Navbar from '~/components/Navbar';
 import { mockAnalyzeGitHub } from '~/lib/github-mock';
+import { useStorageStore } from '~/lib/storage';
 
 interface GitHubAnalysisResult {
   profile: {
@@ -56,24 +57,47 @@ interface GitHubAnalysisResult {
 const GitHub = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { kv } = useStorageStore();
   const [githubUsername, setGithubUsername] = useState('');
   const [resumeSkills, setResumeSkills] = useState('');
+  const [resumeId, setResumeId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [analysis, setAnalysis] = useState<GitHubAnalysisResult | null>(null);
 
-  // Pre-fill skills from resume if passed via query parameter
+  // Load skills from resume if passed via query parameter
   useEffect(() => {
-    const skillsParam = searchParams.get('skills');
-    if (skillsParam) {
-      try {
-        const decodedSkills = decodeURIComponent(skillsParam);
-        setResumeSkills(decodedSkills);
-      } catch (err) {
-        console.error('Error decoding skills:', err);
+    const loadResumeSkills = async () => {
+      const resumeIdParam = searchParams.get('resumeId');
+      const skillsParam = searchParams.get('skills');
+      
+      if (resumeIdParam) {
+        try {
+          setResumeId(resumeIdParam);
+          // Fetch resume data from storage
+          const resumeData = await kv.get(`resume:${resumeIdParam}`);
+          if (resumeData) {
+            const parsed = JSON.parse(resumeData);
+            const extractedSkills = parsed.feedback?.extracted_skills_present || [];
+            if (extractedSkills.length > 0) {
+              setResumeSkills(extractedSkills.join(', '));
+            }
+          }
+        } catch (err) {
+          console.error('Error loading resume skills:', err);
+        }
+      } else if (skillsParam) {
+        try {
+          const decodedSkills = decodeURIComponent(skillsParam);
+          setResumeSkills(decodedSkills);
+        } catch (err) {
+          console.error('Error decoding skills:', err);
+        }
       }
-    }
-  }, [searchParams]);
+    };
+    
+    loadResumeSkills();
+  }, [searchParams, kv]);
 
   const handleAnalyze = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -166,18 +190,18 @@ const GitHub = () => {
               {/* Resume Skills */}
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Your Skills (comma-separated)
+                  Your Skills (from resume)
                 </label>
                 <textarea
                   value={resumeSkills}
-                  onChange={(e) => setResumeSkills(e.target.value)}
-                  placeholder="e.g., React, Node.js, Python, TypeScript"
+                  readOnly
+                  placeholder="Skills will be loaded from your resume..."
                   rows={4}
-                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  disabled={isLoading}
+                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 cursor-not-allowed"
+                  disabled
                 />
                 <p className="text-sm text-slate-500 mt-1">
-                  List the skills from your resume to verify against GitHub
+                  Skills are automatically extracted from your resume analysis
                 </p>
               </div>
 
