@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router';
 import Navbar from '~/components/Navbar';
 import { mockAnalyzeGitHub } from '~/lib/github-mock';
 
@@ -55,11 +55,25 @@ interface GitHubAnalysisResult {
 
 const GitHub = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [githubUsername, setGithubUsername] = useState('');
   const [resumeSkills, setResumeSkills] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [analysis, setAnalysis] = useState<GitHubAnalysisResult | null>(null);
+
+  // Pre-fill skills from resume if passed via query parameter
+  useEffect(() => {
+    const skillsParam = searchParams.get('skills');
+    if (skillsParam) {
+      try {
+        const decodedSkills = decodeURIComponent(skillsParam);
+        setResumeSkills(decodedSkills);
+      } catch (err) {
+        console.error('Error decoding skills:', err);
+      }
+    }
+  }, [searchParams]);
 
   const handleAnalyze = async (e: React.FormEvent) => {
     e.preventDefault();

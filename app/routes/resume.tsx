@@ -95,6 +95,23 @@ const Resume = () => {
                                 jobTitle={jobTitle} 
                             />
                             <Details feedback={feedback} />
+                            
+                            {/* GitHub Analyzer Button */}
+                            {feedback.extracted_skills_present && feedback.extracted_skills_present.length > 0 && (
+                                <div className="bg-gradient-to-r from-slate-800 to-slate-900 rounded-lg p-6 text-white">
+                                    <h3 className="text-lg font-bold mb-2">Verify Your Skills on GitHub</h3>
+                                    <p className="text-slate-300 mb-4">
+                                        We found {feedback.extracted_skills_present.length} skills in your resume. 
+                                        Verify them against your GitHub profile to get an authenticity score.
+                                    </p>
+                                    <Link
+                                        to={`/github?skills=${encodeURIComponent(feedback.extracted_skills_present.join(', '))}`}
+                                        className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition-colors"
+                                    >
+                                        Analyze GitHub Profile →
+                                    </Link>
+                                </div>
+                            )}
                         </div>
                     ) : (
                         <img src="/images/resume-scan-2.gif" className="w-full" />
