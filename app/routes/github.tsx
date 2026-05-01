@@ -157,58 +157,65 @@ const GitHub = () => {
       <div className="max-w-6xl mx-auto px-4 py-12">
         {/* Header */}
         <div className="mb-12">
-          <h1 className="text-4xl font-bold text-slate-900 mb-4">
+          <h1 className="text-5xl font-bold text-slate-900 mb-4">
             GitHub Profile Analyzer
           </h1>
-          <p className="text-lg text-slate-600">
+          <p className="text-xl text-slate-600">
             Verify your skills authenticity by analyzing your GitHub profile
           </p>
         </div>
 
         {/* Form Section */}
         {!analysis && (
-          <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
-            <form onSubmit={handleAnalyze} className="space-y-6">
+          <div className="bg-white rounded-2xl shadow-xl p-8 mb-8 border border-slate-200">
+            <form onSubmit={handleAnalyze} className="space-y-8">
               {/* GitHub Username */}
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  GitHub Username
+                <label className="block text-sm font-bold text-slate-900 mb-3">
+                  🔗 GitHub Username
                 </label>
-                <input
-                  type="text"
-                  value={githubUsername}
-                  onChange={(e) => setGithubUsername(e.target.value)}
-                  placeholder="e.g., sumitdangi45"
-                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  disabled={isLoading}
-                />
-                <p className="text-sm text-slate-500 mt-1">
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={githubUsername}
+                    onChange={(e) => setGithubUsername(e.target.value)}
+                    placeholder="e.g., sumitdangi45"
+                    className="w-full px-5 py-4 border-2 border-slate-300 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-lg"
+                    disabled={isLoading}
+                  />
+                </div>
+                <p className="text-sm text-slate-500 mt-2">
                   Enter your GitHub username (public profile)
                 </p>
               </div>
 
               {/* Resume Skills */}
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Your Skills (from resume)
+                <label className="block text-sm font-bold text-slate-900 mb-3">
+                  ✨ Your Skills (from resume)
                 </label>
-                <textarea
-                  value={resumeSkills}
-                  readOnly
-                  placeholder="Skills will be loaded from your resume..."
-                  rows={4}
-                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 cursor-not-allowed"
-                  disabled
-                />
-                <p className="text-sm text-slate-500 mt-1">
+                <div className="relative">
+                  <textarea
+                    value={resumeSkills}
+                    readOnly
+                    placeholder="Skills will be loaded from your resume..."
+                    rows={5}
+                    className="w-full px-5 py-4 border-2 border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all text-lg bg-slate-50 cursor-not-allowed"
+                    disabled
+                  />
+                  <div className="absolute top-4 right-4 bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-semibold">
+                    Auto-loaded
+                  </div>
+                </div>
+                <p className="text-sm text-slate-500 mt-2">
                   Skills are automatically extracted from your resume analysis
                 </p>
               </div>
 
               {/* Error Message */}
               {error && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                  <p className="text-red-700">{error}</p>
+                <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4">
+                  <p className="text-red-700 font-semibold">⚠️ {error}</p>
                 </div>
               )}
 
@@ -216,9 +223,18 @@ const GitHub = () => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-slate-400 text-white font-semibold py-3 rounded-lg transition-colors"
+                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-slate-400 disabled:to-slate-400 text-white font-bold py-4 rounded-xl transition-all transform hover:scale-105 disabled:scale-100 text-lg shadow-lg"
               >
-                {isLoading ? 'Analyzing...' : 'Analyze GitHub Profile'}
+                {isLoading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <span className="animate-spin">⏳</span>
+                    Analyzing...
+                  </span>
+                ) : (
+                  <span className="flex items-center justify-center gap-2">
+                    🚀 Analyze GitHub Profile
+                  </span>
+                )}
               </button>
             </form>
           </div>
