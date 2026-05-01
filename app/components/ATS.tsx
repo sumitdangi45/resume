@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react';
 
 interface Suggestion {
   type: "good" | "improve";
@@ -8,70 +8,116 @@ interface Suggestion {
 interface ATSProps {
   score: number;
   suggestions: Suggestion[];
+  missingSkills?: string[];
 }
 
-const ATS: React.FC<ATSProps> = ({ score, suggestions }) => {
-  // Determine background gradient based on score
+const ATS: React.FC<ATSProps> = ({ score, suggestions, missingSkills = [] }) => {
+  const [animatedScore, setAnimatedScore] = useState(0);
+
+  useEffect(() => {
+    let currentScore = 0;
+    const interval = setInterval(() => {
+      currentScore += 1;
+      setAnimatedScore(currentScore);
+      if (currentScore >= score) clearInterval(interval);
+    }, 20);
+    return () => clearInterval(interval);
+  }, [score]);
+
   const gradientClass = score > 69
-    ? 'from-green-100'
+    ? 'from-green-100 to-white'
     : score > 49
-      ? 'from-yellow-100'
-      : 'from-red-100';
+      ? 'from-yellow-100 to-white'
+      : 'from-red-100 to-white';
 
-  // Determine icon based on score
-  const iconSrc = score > 69
-    ? '/icons/ats-good.svg'
-    : score > 49
-      ? '/icons/ats-warning.svg'
-      : '/icons/ats-bad.svg';
-
-  // Determine subtitle based on score
-  const subtitle = score > 69
-    ? 'Great Job!'
-    : score > 49
-      ? 'Good Start'
-      : 'Needs Improvement';
+  const strokeColor = score > 69 ? '#10b981' : score > 49 ? '#f59e0b' : '#ef4444';
+  const radius = 40;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (animatedScore / 100) * circumference;
 
   return (
-    <div className={`bg-gradient-to-b ${gradientClass} to-white rounded-2xl shadow-md w-full p-6`}>
-      {/* Top section with icon and headline */}
-      <div className="flex items-center gap-4 mb-6">
-        <img src={iconSrc} alt="ATS Score Icon" className="w-12 h-12" />
-        <div>
-          <h2 className="text-2xl font-bold">ATS Score - {score}/100</h2>
+    <div className={`bg-gradient-to-b ${gradientClass} rounded-2xl shadow-md w-full p-6 transition-all duration-500`}>
+      <div className="flex flex-col md:flex-row items-center gap-8 mb-6">
+        
+        {/* Animated Progress Circle */}
+        <div className="relative flex items-center justify-center w-32 h-32">
+          <svg className="transform -rotate-90 w-full h-full">
+            <circle
+              cx="64"
+              cy="64"
+              r={radius}
+              stroke="currentColor"
+              strokeWidth="10"
+              fill="transparent"
+              className="text-gray-200"
+            />
+            <circle
+              cx="64"
+              cy="64"
+              r={radius}
+              stroke={strokeColor}
+              strokeWidth="10"
+              fill="transparent"
+              strokeDasharray={circumference}
+              strokeDashoffset={strokeDashoffset}
+              className="transition-all duration-300 ease-out"
+              strokeLinecap="round"
+            />
+          </svg>
+          <div className="absolute flex flex-col items-center justify-center">
+            <span className="text-3xl font-bold text-gray-800">{animatedScore}%</span>
+            <span className="text-xs text-gray-500 uppercase tracking-wider">ATS Match</span>
+          </div>
+        </div>
+
+        <div className="flex-1">
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">Smart ATS Analysis</h2>
+          <p className="text-gray-600">
+            This score predicts how well your resume matches the job description using advanced ML weighting for skills and experience.
+          </p>
         </div>
       </div>
 
-      {/* Description section */}
-      <div className="mb-6">
-        <h3 className="text-xl font-semibold mb-2">{subtitle}</h3>
-        <p className="text-gray-600 mb-4">
-          This score represents how well your resume is likely to perform in Applicant Tracking Systems used by employers.
-        </p>
-
-        {/* Suggestions list */}
-        <div className="space-y-3">
-          {suggestions.map((suggestion, index) => (
-            <div key={index} className="flex items-start gap-3">
-              <img
-                src={suggestion.type === "good" ? "/icons/check.svg" : "/icons/warning.svg"}
-                alt={suggestion.type === "good" ? "Check" : "Warning"}
-                className="w-5 h-5 mt-1"
-              />
-              <p className={suggestion.type === "good" ? "text-green-700" : "text-amber-700"}>
-                {suggestion.tip}
-              </p>
+      <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-4">
+            <h3 className="text-xl font-semibold flex items-center gap-2">
+                <img src="/icons/ats-warning.svg" alt="Suggestions" className="w-6 h-6" />
+                Improvement Suggestions
+            </h3>
+            <div className="space-y-3">
+              {suggestions.map((suggestion, index) => (
+                <div key={index} className="flex items-start gap-3 bg-white/50 p-3 rounded-lg border border-white/60">
+                  <img
+                    src={suggestion.type === "good" ? "/icons/check.svg" : "/icons/warning.svg"}
+                    alt={suggestion.type === "good" ? "Check" : "Warning"}
+                    className="w-5 h-5 mt-1"
+                  />
+                  <p className={suggestion.type === "good" ? "text-green-700 font-medium" : "text-amber-700 font-medium"}>
+                    {suggestion.tip}
+                  </p>
+                </div>
+              ))}
             </div>
-          ))}
         </div>
-      </div>
 
-      {/* Closing encouragement */}
-      <p className="text-gray-700 italic">
-        Keep refining your resume to improve your chances of getting past ATS filters and into the hands of recruiters.
-      </p>
+        {missingSkills.length > 0 && (
+            <div className="space-y-4">
+                <h3 className="text-xl font-semibold flex items-center gap-2">
+                    <span className="text-red-500 font-bold text-xl">❌</span>
+                    Missing Skills
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {missingSkills.map((skill, index) => (
+                    <span key={index} className="px-3 py-1 bg-red-100 text-red-700 border border-red-200 rounded-full text-sm font-semibold shadow-sm animate-in zoom-in duration-300">
+                        {skill}
+                    </span>
+                  ))}
+                </div>
+            </div>
+        )}
+      </div>
     </div>
   )
 }
 
-export default ATS
+export default ATS;

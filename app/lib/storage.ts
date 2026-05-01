@@ -238,7 +238,18 @@ export const useStorageStore = create<StorageStore>((set, get) => {
                         ],
                         keywords_found: ["Python", "React", "JavaScript", "Project Management"],
                         keywords_missing: ["Cloud", "DevOps", "Machine Learning"],
-                        overall_feedback: "Your resume is well-structured. Focus on adding more metrics and specific achievements to improve your ATS score."
+                        overall_feedback: "Your resume is well-structured. Focus on adding more metrics and specific achievements to improve your ATS score.",
+                        // Added for Smart ATS Logic
+                        extracted_skills_present: ["Python", "React", "JavaScript"],
+                        extracted_skills_required: ["Python", "React", "TypeScript", "Node.js", "Docker"],
+                        extracted_experience_years: 3,
+                        ATS: {
+                            score: 0,
+                            tips: [
+                                { type: "improve", tip: "Add TypeScript" },
+                                { type: "good", tip: "Strong React skills" }
+                            ]
+                        }
                     })
                 }
             };

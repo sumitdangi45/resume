@@ -4,6 +4,7 @@ import {useStorageStore} from "~/lib/storage";
 import Summary from "~/components/Summary";
 import ATS from "~/components/ATS";
 import Details from "~/components/Details";
+import SkillRoadmap from "~/components/SkillRoadmap";
 
 export const meta = () => ([
     { title: 'Resumind | Review ' },
@@ -16,6 +17,8 @@ const Resume = () => {
     const [imageUrl, setImageUrl] = useState('');
     const [resumeUrl, setResumeUrl] = useState('');
     const [feedback, setFeedback] = useState<Feedback | null>(null);
+    const [companyName, setCompanyName] = useState('');
+    const [jobTitle, setJobTitle] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -25,6 +28,8 @@ const Resume = () => {
             if(!resume) return;
 
             const data = JSON.parse(resume);
+            setCompanyName(data.companyName || '');
+            setJobTitle(data.jobTitle || '');
 
             const resumeBlob = await fs.read(data.resumePath);
             if(!resumeBlob) return;
@@ -69,10 +74,26 @@ const Resume = () => {
                 </section>
                 <section className="feedback-section">
                     <h2 className="text-4xl !text-black font-bold">Resume Review</h2>
+                    {feedback?.predicted_category && (
+                        <div className="flex items-center gap-2 mt-2 mb-6 animate-in fade-in duration-500">
+                            <span className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-sm font-bold px-4 py-1.5 rounded-full shadow-md flex items-center gap-2">
+                                ✨ AI Predicted Role: {feedback.predicted_category}
+                            </span>
+                        </div>
+                    )}
                     {feedback ? (
                         <div className="flex flex-col gap-8 animate-in fade-in duration-1000">
                             <Summary feedback={feedback} />
-                            <ATS score={feedback.ats_score || 0} suggestions={feedback.improvements || []} />
+                            <ATS 
+                                score={feedback.ATS?.score || feedback.ats_score || 0} 
+                                suggestions={feedback.ATS?.tips || feedback.improvements || []} 
+                                missingSkills={feedback.missing_skills || []} 
+                            />
+                            <SkillRoadmap 
+                                missingSkills={feedback.missing_skills || []} 
+                                companyName={companyName} 
+                                jobTitle={jobTitle} 
+                            />
                             <Details feedback={feedback} />
                         </div>
                     ) : (

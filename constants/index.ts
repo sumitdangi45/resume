@@ -223,11 +223,20 @@ export const AIResponseFormat = `
           explanation: string; //explain in detail here
         }[]; //give 3-4 tips
       };
+      // New fields for Smart ATS calculation
+      extracted_skills_present: string[]; // List of skills found in the resume
+      extracted_skills_required: string[]; // List of skills required for the job role
+      extracted_experience_years: number; // Candidate's total years of experience
+      
+      // Validation
+      is_resume: boolean; // MUST be true if the document is a resume/CV. If it's a random image, recipe, or non-resume, set to false.
+      error_message?: string; // If is_resume is false, provide a short 1-sentence reason why (e.g. "This appears to be a recipe, not a resume.")
     }`;
 
 export const prepareInstructions = ({jobTitle, jobDescription}: { jobTitle: string; jobDescription: string; }) =>
     `You are an expert in ATS (Applicant Tracking System) and resume analysis.
-      Please analyze and rate this resume and suggest how to improve it.
+      First, verify if the provided document is actually a resume or CV. If it is NOT a resume (e.g., it's a random picture, recipe, essay), set 'is_resume' to false, provide an 'error_message', and you can leave the other fields empty or 0.
+      If it IS a resume, set 'is_resume' to true and please analyze and rate this resume and suggest how to improve it.
       The rating can be low if the resume is bad.
       Be thorough and detailed. Don't be afraid to point out any mistakes or areas for improvement.
       If there is a lot to improve, don't hesitate to give low scores. This is to help the user to improve their resume.
