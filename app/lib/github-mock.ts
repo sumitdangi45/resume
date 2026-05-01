@@ -65,6 +65,7 @@ export const generateMockAnalysis = (
     'JavaScript',
     'TypeScript',
     'React',
+    'Python',
     'Node.js',
     'HTML',
     'CSS',
