@@ -1,8 +1,8 @@
 import type { Route } from "./+types/home";
 import Navbar from "~/components/Navbar";
 import ResumeCard from "~/components/ResumeCard";
-import {usePuterStore} from "~/lib/puter";
-import {Link, useNavigate} from "react-router";
+import {useStorageStore} from "~/lib/storage";
+import {Link} from "react-router";
 import {useEffect, useState} from "react";
 
 export function meta({}: Route.MetaArgs) {
@@ -13,20 +13,20 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Home() {
-  const { auth, kv } = usePuterStore();
-  const navigate = useNavigate();
+  const { kv } = useStorageStore();
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [loadingResumes, setLoadingResumes] = useState(false);
 
-  useEffect(() => {
-    if(!auth.isAuthenticated) navigate('/auth?next=/');
-  }, [auth.isAuthenticated])
+  // Auth check removed - direct access enabled
+  // useEffect(() => {
+  //   if(!auth.isAuthenticated) navigate('/auth?next=/');
+  // }, [auth.isAuthenticated])
 
   useEffect(() => {
     const loadResumes = async () => {
       setLoadingResumes(true);
 
-      const resumes = (await kv.list('resume:*', true)) as KVItem[];
+      const resumes = (await kv.list('resume:*', true)) as any[];
 
       const parsedResumes = resumes?.map((resume) => (
           JSON.parse(resume.value) as Resume
@@ -37,7 +37,7 @@ export default function Home() {
     }
 
     loadResumes()
-  }, []);
+  }, [kv]);
 
   return <main className="bg-[url('/images/bg-main.svg')] bg-cover">
     <Navbar />
