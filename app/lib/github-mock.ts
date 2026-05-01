@@ -60,8 +60,44 @@ export const generateMockAnalysis = (
   // Simulate different profiles based on username
   const isGoodProfile = username.toLowerCase().includes('sumit') || username.toLowerCase().includes('dev');
   
+  // GitHub languages that are actually found in repositories
+  const githubLanguages = [
+    'JavaScript',
+    'TypeScript',
+    'React',
+    'Node.js',
+    'HTML',
+    'CSS',
+  ];
+  
+  // Normalize skills for comparison (lowercase, remove spaces)
+  const normalizedSkills = skills.map(s => s.toLowerCase().trim());
+  const normalizedGithubLangs = githubLanguages.map(l => l.toLowerCase().trim());
+  
+  // Verify skills: check if skill is found in GitHub languages
+  const verifiedSkills: string[] = [];
+  const unverifiedSkills: string[] = [];
+  
+  normalizedSkills.forEach((skill, index) => {
+    // Check if this skill exists in GitHub languages (case-insensitive)
+    const isFound = normalizedGithubLangs.some(lang => 
+      lang.includes(skill) || skill.includes(lang)
+    );
+    
+    if (isFound) {
+      verifiedSkills.push(skills[index]); // Use original case
+    } else {
+      unverifiedSkills.push(skills[index]); // Use original case
+    }
+  });
+  
+  // Calculate skill match based on verified skills
+  const skillMatchPercentage = skills.length > 0 
+    ? Math.round((verifiedSkills.length / skills.length) * 100)
+    : 0;
+  
   const baseScore = isGoodProfile ? 75 : 55;
-  const skillMatch = Math.min(100, (skills.length * 20) + (isGoodProfile ? 30 : 10));
+  const skillMatch = Math.min(100, skillMatchPercentage + (isGoodProfile ? 20 : 5));
   
   return {
     profile: {
@@ -171,17 +207,9 @@ export const generateMockAnalysis = (
     ],
     skill_verification: {
       score: skillMatch,
-      verified: skills.slice(0, Math.ceil(skills.length * 0.7)),
-      unverified: skills.slice(Math.ceil(skills.length * 0.7)),
-      github_languages: [
-        'JavaScript',
-        'TypeScript',
-        'Python',
-        'React',
-        'Node.js',
-        'HTML',
-        'CSS',
-      ],
+      verified: verifiedSkills,
+      unverified: unverifiedSkills,
+      github_languages: githubLanguages,
     },
     authenticity_score: {
       total_score: baseScore,
