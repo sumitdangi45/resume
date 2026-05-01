@@ -1,5 +1,54 @@
 import { create } from "zustand";
 
+// List of common skills to extract from resume
+const COMMON_SKILLS = [
+  // Programming Languages
+  'Python', 'JavaScript', 'TypeScript', 'Java', 'C++', 'C#', 'PHP', 'Ruby', 'Go', 'Rust', 'Kotlin', 'Swift',
+  
+  // Frontend
+  'React', 'React.js', 'Vue', 'Vue.js', 'Angular', 'Svelte', 'Next.js', 'Nuxt', 'HTML', 'CSS', 'SASS', 'Tailwind', 'Bootstrap',
+  
+  // Backend
+  'Node.js', 'Express', 'Express.js', 'Django', 'Flask', 'FastAPI', 'Spring', 'Spring Boot', 'Laravel', 'ASP.NET',
+  
+  // Databases
+  'MongoDB', 'MySQL', 'PostgreSQL', 'SQL', 'Firebase', 'Redis', 'Elasticsearch', 'DynamoDB',
+  
+  // DevOps & Cloud
+  'Docker', 'Kubernetes', 'AWS', 'Azure', 'GCP', 'Google Cloud', 'Vercel', 'Render', 'Heroku', 'Jenkins', 'CI/CD',
+  
+  // Tools & Technologies
+  'Git', 'Github', 'GitLab', 'REST APIs', 'GraphQL', 'JWT', 'Redux', 'Redux Toolkit', 'Webpack', 'Vite', 'Jest', 'Cypress',
+  
+  // Data Science & AI
+  'AIML', 'Machine Learning', 'Data Analysis', 'Excel', 'Power BI', 'Tableau', 'Pandas', 'NumPy', 'Scikit-learn', 'TensorFlow',
+  
+  // UI/UX
+  'Figma', 'Canva', 'Adobe XD', 'Sketch', 'Photoshop', 'Illustrator',
+  
+  // Other
+  'React Native', 'Mobile Development', 'Web Development', 'Full Stack', 'Agile', 'Scrum'
+];
+
+// Function to extract skills from resume text
+const extractSkillsFromResume = (resumeText: string): string[] => {
+  if (!resumeText) return [];
+  
+  const extractedSkills: Set<string> = new Set();
+  const lowerText = resumeText.toLowerCase();
+  
+  // Search for each skill in the resume text
+  COMMON_SKILLS.forEach(skill => {
+    const skillLower = skill.toLowerCase();
+    if (lowerText.includes(skillLower)) {
+      extractedSkills.add(skill);
+    }
+  });
+  
+  // Convert set to array and return
+  return Array.from(extractedSkills).sort();
+};
+
 interface StorageStore {
     isLoading: boolean;
     error: string | null;
@@ -189,6 +238,9 @@ export const useStorageStore = create<StorageStore>((set, get) => {
     const feedback = async (path: string, message: string): Promise<any> => {
         try {
             // Mock AI response - in production, this would call your backend API
+            // Extract skills from the message (which contains resume text)
+            const extractedSkills = extractSkillsFromResume(message);
+            
             const mockFeedback = {
                 message: {
                     content: JSON.stringify({
@@ -236,11 +288,11 @@ export const useStorageStore = create<StorageStore>((set, get) => {
                             { type: "improve", tip: "Include specific technologies used" },
                             { type: "good", tip: "Good formatting and readability" }
                         ],
-                        keywords_found: ["Python", "React", "JavaScript", "Project Management"],
+                        keywords_found: extractedSkills,
                         keywords_missing: ["Cloud", "DevOps", "Machine Learning"],
                         overall_feedback: "Your resume is well-structured. Focus on adding more metrics and specific achievements to improve your ATS score.",
-                        // Added for Smart ATS Logic
-                        extracted_skills_present: ["Python", "React", "JavaScript"],
+                        // Added for Smart ATS Logic - Extract from resume
+                        extracted_skills_present: extractedSkills,
                         extracted_skills_required: ["Python", "React", "TypeScript", "Node.js", "Docker"],
                         extracted_experience_years: 3,
                         ATS: {

@@ -62,13 +62,93 @@ export const generateMockAnalysis = (
   
   // GitHub languages that are actually found in repositories
   const githubLanguages = [
+    // Programming Languages
     'JavaScript',
     'TypeScript',
-    'React',
     'Python',
-    'Node.js',
+    'Java',
+    'C++',
+    'C#',
+    'PHP',
+    'Ruby',
+    'Go',
+    'Rust',
+    
+    // Frontend
+    'React',
+    'React.js',
+    'Vue',
+    'Vue.js',
+    'Angular',
     'HTML',
     'CSS',
+    'SASS',
+    'Tailwind',
+    'Bootstrap',
+    
+    // Backend
+    'Node.js',
+    'Express',
+    'Express.js',
+    'Django',
+    'Flask',
+    'FastAPI',
+    'Spring',
+    'Spring Boot',
+    'Laravel',
+    
+    // Databases
+    'MongoDB',
+    'MySQL',
+    'PostgreSQL',
+    'SQL',
+    'Firebase',
+    'Redis',
+    
+    // DevOps & Cloud
+    'Docker',
+    'Kubernetes',
+    'AWS',
+    'Azure',
+    'GCP',
+    'Vercel',
+    'Render',
+    'Heroku',
+    'CI/CD',
+    
+    // Tools
+    'Git',
+    'Github',
+    'REST APIs',
+    'GraphQL',
+    'JWT',
+    'Redux',
+    'Redux Toolkit',
+    'Webpack',
+    'Vite',
+    'Jest',
+    
+    // Data Science
+    'AIML',
+    'Machine Learning',
+    'Data Analysis',
+    'Excel',
+    'Power BI',
+    'Pandas',
+    'NumPy',
+    
+    // UI/UX
+    'Figma',
+    'Canva',
+    'Adobe XD',
+    
+    // Other
+    'React Native',
+    'Mobile Development',
+    'Web Development',
+    'Full Stack',
+    'Agile',
+    'Scrum'
   ];
   
   // Normalize skills for comparison (lowercase, remove spaces)
